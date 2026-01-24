@@ -1,0 +1,24 @@
+{
+  "name": "gold-digger",
+  "version": "1.0.0",
+  "description": "\"A widget which keeps you informed of current market prices and allows you to buy gold at the click of a button\"",
+  "homepage": "https://github.com/fab44-cloud/gold-digger#readme",
+  "bugs": {
+    "url": "https://github.com/fab44-cloud/gold-digger/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fab44-cloud/gold-digger.git"
+  },
+  "license": "ISC",
+  "author": "Ford Berry",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.11"
+  }
+}
