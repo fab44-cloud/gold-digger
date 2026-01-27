@@ -10,7 +10,6 @@ export async function serveStatic(req, res, baseDir) {
         publicDir,
         req.url === '/' ? 'index.html' : req.url
     )
-    console.log(filePath)
 
     const ext = path.extname(filePath)
 
@@ -20,6 +19,13 @@ export async function serveStatic(req, res, baseDir) {
         const content = await fs.readFile(filePath)
         sendResponse(res, 200, contentType, content)
     } catch (err) {
-        console.log(err)
+        if (err.code === 'ENOENT') {
+            console.log(err)
+            const content = await fs.readFile(path.join(publicDir, '404.html'))
+            sendResponse(res, 404, 'text/html', content)
+        }
+        else {
+            sendResponse(res, 500, 'text/html', `<html><h1>Server Error: ${err.code}</h1></html>`)
+        }
     }
 }
