@@ -3,7 +3,7 @@ const priceDisplay = document.getElementById('price-display')
 async function updatePrice() {
     try {
         const data = await fetch('/api')
-    
+        if (!data.ok) return false
         // Parse the JSON data from the server
         const response = await data.json()
         const price = response.price
