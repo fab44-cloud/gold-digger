@@ -1,4 +1,5 @@
 const priceDisplay = document.getElementById('price-display')
+const dialog = document.querySelector('.outputs')
 
 async function updatePrice() {
     try {
@@ -30,3 +31,15 @@ async function initApp() {
  }
 
  initApp()
+
+ document.querySelector('main').addEventListener('click', (event) => {
+    const investBtn = event.target.closest('#invest-btn')
+    const okBtn = event.target.closest('#ok-btn')
+
+    if (investBtn) {
+        event.preventDefault()
+        dialog.showModal()
+    } else if (okBtn) {
+        dialog.close()
+    }
+ })
