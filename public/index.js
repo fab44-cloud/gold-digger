@@ -11,9 +11,11 @@ async function updatePrice() {
         if (priceDisplay) {
             priceDisplay.textContent = price
         }
+        return true
 
     } catch(err) {
         console.log(err)
+        return false
     }
 }
 
