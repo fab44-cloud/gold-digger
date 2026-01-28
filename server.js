@@ -9,7 +9,7 @@ const PORT = 3000
 const __dirname = import.meta.dirname
 
 const server = http.createServer((req, res) => {
-    if (req.url === "/api/price") {
+    if (req.url === "/api") {
         const price = generateNewPrice()
         sendResponse(res, 200, 'application/json', JSON.stringify({price: price}))
         return
