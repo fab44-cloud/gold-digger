@@ -38,8 +38,24 @@ async function initApp() {
 
     if (investBtn) {
         event.preventDefault()
-        dialog.showModal()
+
+        const amountInput = document.getElementById('investment-amount')
+        const price = parseFloat(priceDisplay.textContent)
+        const amount = parseFloat(amountInput.value)
+        const investmentSummary = document.getElementById('investment-summary')
+
+        if (amount > 0) {
+            const ouncesCalculation = (amount / price).toFixed(4)
+            investmentSummary.innerText = `You just bought ${ouncesCalculation} ounces (ozt) for £${amount.toLocaleString()}. \n You will receive
+            documentation shortly.`
+            dialog.showModal()
+        } else {
+            return
+        }
     } else if (okBtn) {
         dialog.close()
+        const amountInput = document.getElementById('investment-amount')
+        amountInput.value = ''
+        amountInput.focus()
     }
  })
