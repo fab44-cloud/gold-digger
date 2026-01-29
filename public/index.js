@@ -48,7 +48,22 @@ async function initApp() {
             const ouncesCalculation = (amount / price).toFixed(4)
             investmentSummary.innerText = `You just bought ${ouncesCalculation} ounces (ozt) for £${amount.toLocaleString()}. \n You will receive
             documentation shortly.`
+
+        fetch('/purchase', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                amount: amount,
+                ounces: ouncesCalculation,
+                price: price
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Server says:', data.message)
             dialog.showModal()
+        })
+        .catch(err => console.error('Connection error', err))
         } else {
             return
         }
