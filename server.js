@@ -14,6 +14,9 @@ const server = http.createServer( async (req, res) => {
         sendResponse(res, 200, 'application/json', JSON.stringify({price: price}))
         return
     }
+    else if (req.url === '/purchase' && req.method === 'POST') {
+        handlePost(req, res)
+    }
     else if (!req.url.startsWith('/api')) {
         return await serveStatic(req, res, __dirname)
     }
