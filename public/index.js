@@ -60,7 +60,9 @@ async function initApp() {
         })
         .then(response => response.json())
         .then(data => {
-            console.log('Server says:', data.message)
+            if (data.success) {
+                investmentSummary.innerHTML += `<br><small>Transaction ID: ${data.transactionID}</small>`
+            }
             dialog.showModal()
         })
         .catch(err => console.error('Connection error', err))
