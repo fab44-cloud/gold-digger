@@ -3,10 +3,21 @@ import { serveStatic } from './utils/serveStatic.js'
 import { generateNewPrice } from './utils/priceSimulator.js'
 import { sendResponse } from './utils/sendResponse.js'
 import { handlePost } from './handlers/routeHandlers.js'
+import { EventEmitter } from 'node:events'
 
 const PORT = 3000
 
 const __dirname = import.meta.dirname
+
+const priceEmitter = new EventEmitter()
+
+setInterval(() => {
+    const newPrice = generateNewPrice()
+
+    priceEmitter.emit('priceUpdate', newPrice)
+
+    console.log(`[Server] Price updated and emitted £${newPrice}`)
+}, 5000)
 
 const server = http.createServer( async (req, res) => {
     if (req.url === '/api') {
