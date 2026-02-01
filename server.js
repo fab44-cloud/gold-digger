@@ -15,8 +15,6 @@ setInterval(() => {
     const newPrice = generateNewPrice()
 
     priceEmitter.emit('priceUpdate', newPrice)
-
-    console.log(`[Server] Price updated and emitted £${newPrice}`)
 }, 5000)
 
 const server = http.createServer( async (req, res) => {
@@ -47,6 +45,23 @@ const server = http.createServer( async (req, res) => {
     }
     else if (req.url === '/purchase' && req.method === 'POST') {
         handlePost(req, res, __dirname)
+    }
+    else if (req.url.startsWith('/api/download-receipt') && req.method === 'GET') {
+        const urlParams = new URL(req.url, `http://${req.headers.host}`)
+        const transactionId = urlParams.searchParams.get('id')
+
+        if (!transactionId) {
+            sendResponse(res, 400, 'text/plain', 'Transaction ID required')
+            return
+        }
+
+        res.writeHead(200, {
+            'Content-Type': 'application/pdf',
+            'Content-Disposition': `attachment; filename=receipt-${transactionId}.pdf`
+        })
+
+        res.end('PDF Generation Placeholder')
+        return
     }
     else if (!req.url.startsWith('/api')) {
         return await serveStatic(req, res, __dirname)

@@ -56,7 +56,7 @@ eventSource.onmessage = (event) => {
 
         if (amount > 0) {
             const ouncesCalculation = (amount / price).toFixed(4)
-            investmentSummary.innerText = `You just bought ${ouncesCalculation} ounces (ozt) for £${amount.toLocaleString()}. \n You will receive
+            investmentSummary.innerHTML = `You just bought ${ouncesCalculation} ounces (ozt) for £${amount.toLocaleString()}. \n You will receive
             documentation shortly.`
 
         fetch('/purchase', {
@@ -71,7 +71,18 @@ eventSource.onmessage = (event) => {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                investmentSummary.innerHTML += `<br><small>Transaction ID: ${data.transactionID}</small>`
+                investmentSummary.innerHTML += `<br><small>Transaction ID: ${data.transactionId}</small>`
+
+                const downloadLink = document.createElement('a')
+                downloadLink.href = `api/download-receipt?id=${data.transactionId}`
+                downloadLink.textContent = 'Download PDF Receipt'
+
+                downloadLink.style.display = 'block'
+                downloadLink.style.marginTop = '10px'
+                downloadLink.style.color = '#ffd700'
+                downloadLink.target = '_blank'
+
+                investmentSummary.appendChild(downloadLink)
             }
             dialog.showModal()
         })
