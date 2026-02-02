@@ -75,7 +75,7 @@ eventSource.onmessage = (event) => {
 
                 const downloadLink = document.createElement('a')
                 downloadLink.href = `api/download-receipt?id=${data.transactionId}`
-                downloadLink.textContent = 'Download PDF Receipt'
+                downloadLink.textContent = 'Download Text Receipt'
 
                 downloadLink.style.display = 'block'
                 downloadLink.style.marginTop = '10px'
