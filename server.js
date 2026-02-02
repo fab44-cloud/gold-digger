@@ -4,6 +4,8 @@ import { generateNewPrice } from './utils/priceSimulator.js'
 import { sendResponse } from './utils/sendResponse.js'
 import { handlePost } from './handlers/routeHandlers.js'
 import { EventEmitter } from 'node:events'
+import fs from 'node:fs/promises'
+import path from 'node:path'
 
 const PORT = 3000
 
@@ -55,13 +57,42 @@ const server = http.createServer( async (req, res) => {
             return
         }
 
-        res.writeHead(200, {
-            'Content-Type': 'application/pdf',
-            'Content-Disposition': `attachment; filename=receipt-${transactionId}.pdf`
-        })
+        try {
+            const filePath = path.join(__dirname, 'purchases.txt')
 
-        res.end('PDF Generation Placeholder')
-        return
+            const fileContent = await fs.readFile(filePath, 'utf-8')
+
+            const lines = fileContent.split('\n')
+            const transactionLine = lines.find(line => line.includes(transactionId))
+
+            if (!transactionLine) {
+                sendResponse(res, 404, 'text/plain', 'Transaction record not found')
+                return
+            }
+
+            const parts = transactionLine.split(',')
+
+            const transactionData = {
+                id: parts[0].replace('ID: ', '').trim(),
+                date: `${parts[1].trim()} at ${parts[2].trim()}`,
+                amount: parts[3].split(':')[1].trim(),
+                price: parts[4].split(':')[1].trim(),
+                ounces: parts[5].split(':')[1].trim()
+            }
+
+            console.log('Parsed Data', transactionData)
+
+            res.writeHead(200, {
+                'Content-Type': 'application/pdf',
+                'Content-Disposition': `attachment; filename=receipt-${transactionId}.pdf`
+            })
+
+            res.end(`Receipt Data: ${transactionLine}`)
+        } catch(err) {
+            console.error('File system error', err)
+            sendResponse(res, 500, 'text/plain', 'Error accessing transaction logs')
+            return
+        }
     }
     else if (!req.url.startsWith('/api')) {
         return await serveStatic(req, res, __dirname)
