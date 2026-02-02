@@ -5,7 +5,7 @@ import { sendResponse } from './utils/sendResponse.js'
 import { handlePost } from './handlers/routeHandlers.js'
 import { EventEmitter } from 'node:events'
 import fs from 'node:fs/promises'
-import path from 'node:path'
+import path, { dirname } from 'node:path'
 
 const PORT = 3000
 
@@ -52,16 +52,9 @@ const server = http.createServer( async (req, res) => {
         const urlParams = new URL(req.url, `http://${req.headers.host}`)
         const transactionId = urlParams.searchParams.get('id')
 
-        if (!transactionId) {
-            sendResponse(res, 400, 'text/plain', 'Transaction ID required')
-            return
-        }
-
         try {
             const filePath = path.join(__dirname, 'purchases.txt')
-
             const fileContent = await fs.readFile(filePath, 'utf-8')
-
             const lines = fileContent.split('\n')
             const transactionLine = lines.find(line => line.includes(transactionId))
 
@@ -71,23 +64,28 @@ const server = http.createServer( async (req, res) => {
             }
 
             const parts = transactionLine.split(',')
-
             const transactionData = {
                 id: parts[0].replace('ID: ', '').trim(),
                 date: `${parts[1].trim()} at ${parts[2].trim()}`,
-                amount: parts[3].split(':')[1].trim(),
-                price: parts[4].split(':')[1].trim(),
-                ounces: parts[5].split(':')[1].trim()
+                amount: parts[3].includes(':') ? parts[3].split(':')[1].trim() : 'N/A',
+                price: parts[4].includes(':') ? parts[4].split(':')[1].trim() : 'N/A',
+                ounces: parts[5].includes(':') ? parts[5].split(':')[1].trim() : 'N/A'
             }
 
-            console.log('Parsed Data', transactionData)
+            const receiptText = `
+            ID: ${transactionData.id}
+            Date: ${transactionData.date}
+            Gold: ${transactionData.ounces}
+            Price: ${transactionData.price} / Oz
+            Total: ${transactionData.amount}
+            `.trim()
 
             res.writeHead(200, {
-                'Content-Type': 'application/pdf',
-                'Content-Disposition': `attachment; filename=receipt-${transactionId}.pdf`
+                'Content-Type': 'text/plain',
+                'Content-Disposition': `attachment; filename=receipt-${transactionId}.text`
             })
-
-            res.end(`Receipt Data: ${transactionLine}`)
+            res.end(receiptText)
+            return
         } catch(err) {
             console.error('File system error', err)
             sendResponse(res, 500, 'text/plain', 'Error accessing transaction logs')
