@@ -1,9 +1,9 @@
-import { parseJSONBody } from '../utils/parseJSONBody.js'
-import { sendResponse } from '../utils/sendResponse.js'
+import { parseJSONBody } from '../public/utils/parseJSONBody.js'
+import { sendResponse } from '../public/utils/sendResponse.js'
 import { randomUUID } from 'node:crypto'
 import fs from 'node:fs/promises'
 import path from 'node:path'
-import { sanitizeInput } from '../utils/santitizeInput.js'
+import { sanitizeInput } from '../public/utils/santitizeInput.js'
 
 export async function handlePost(req, res, __dirname) {
     try {
