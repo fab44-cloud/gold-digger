@@ -1,5 +1,6 @@
 const priceDisplay = document.getElementById('price-display')
 const dialog = document.querySelector('.outputs')
+import { updateConnectionStatus } from './utils/uiManager.js'
 
 // async function updatePrice() {
 //     try {
@@ -34,12 +35,19 @@ const dialog = document.querySelector('.outputs')
 
 const eventSource = new EventSource('/api/updates')
 
+eventSource.onopen = () => {
+    console.log('Connection established!')
+    updateConnectionStatus(true)
+}
+
+eventSource.onerror = () => {
+    console.log('Connection lost. Retrying...')
+    updateConnectionStatus(false)
+}
+
 eventSource.onmessage = (event) => {
     const data = JSON.parse(event.data)
-
-    if (priceDisplay) {
-        priceDisplay.textContent = data.price
-    }
+    if (priceDisplay) priceDisplay.textContent = data.price
 }
 
  document.querySelector('main').addEventListener('click', (event) => {
