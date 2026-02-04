@@ -4,6 +4,7 @@ import { randomUUID } from 'node:crypto'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import { sanitizeInput } from '../public/utils/santitizeInput.js'
+import { sendReceiptEmail } from '../public/utils/emailService.js'
 
 export async function handlePost(req, res, __dirname) {
     try {
@@ -15,11 +16,23 @@ export async function handlePost(req, res, __dirname) {
     
         await fs.appendFile(path.join(__dirname, 'purchases.txt'), logEntry)
 
+        const transactionData = {
+            id: transactionId,
+            date: new Date().toLocaleString(),
+            amount: `£${cleanData.amount}`,
+            ounces: `${cleanData.ounces}`
+        }
+
+        sendReceiptEmail(transactionData).catch(err => {
+            console.error('Background Email Error', err)
+        })
+
         sendResponse(res, 200, 'application/json', JSON.stringify({
             success: true,
             transactionId: transactionId
         }))
     } catch(err) {
-        sendResponse(res, 500, 'application/json', JSON.stringify({error: 'Log failed'}))
+        console.error('Error handling purchase', err)
+        sendResponse(res, 500, 'application/json', 'Internal Server Error')
     }
 }
