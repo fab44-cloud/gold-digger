@@ -6,4 +6,5 @@ A widget which keeps you informed of current market prices and allows you to buy
 
 ## Features
 
--Text file generation with transaction details. -Response email confirming purchase
+-Text file generation with transaction details.
+-Response email confirming purchase
